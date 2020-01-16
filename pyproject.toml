@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "mebula"
-version = "0.1.1"
+version = "0.1.2"
 description = ""
 authors = ["Matt Williams <matt@milliams.com>"]
 license = "MIT"
