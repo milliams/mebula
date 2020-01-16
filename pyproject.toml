@@ -3,12 +3,19 @@ name = "mebula"
 version = "0.1.0"
 description = ""
 authors = ["Matt Williams <matt@milliams.com>"]
+license = "MIT"
 
 [tool.poetry.dependencies]
 python = "^3.6"
+oci = "^2.9.0"
+google-api-python-client = "^1.7.11"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
+black = {version = "^19.10b0", allow-prereleases = true}
+mypy = "^0.761"
+flake8 = "^3.7.9"
+coverage = "^5.0.3"
 
 [build-system]
 requires = ["poetry>=1.0.0"]
