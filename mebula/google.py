@@ -80,7 +80,7 @@ class GoogleComputeInstance(collections.abc.Mapping):
         # Should match google_api_client("compute", "v1").instances()._schema.get("Instance")
         self.data = {}
         self.data["name"] = body["name"]
-        self.data["tags"] = body["tags"]
+        self.data["tags"] = body.get("tags", {})
         self.data["status"] = "RUNNING"
 
     def __getitem__(self, key):
