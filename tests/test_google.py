@@ -66,8 +66,7 @@ def test_parse_filter_simple_match_tree():
     assert term.data == "compare"
 
     key = term.children[0]
-    assert key.data == "key"
-    assert key.children[0] == "name"
+    assert key == "name"
 
     operator = term.children[1]
     assert operator.data == "equals"
@@ -76,7 +75,7 @@ def test_parse_filter_simple_match_tree():
     assert value.data == "value"
     assert value.children[0] == "instance"
 
-    instance = GoogleComputeInstance({"name": "instance"})
+    instance = GoogleComputeInstance("z", {"name": "instance"})
     assert FilterInstance(instance).transform(p)
 
 
@@ -98,7 +97,10 @@ def test_parse_filter_simple_match_tree():
     ],
 )
 def test_parse_filter_simple(filter_text):
-    parse_filter(filter_text)
+    print(filter_text)
+    p = parse_filter(filter_text)
+    instance = GoogleComputeInstance("z", {"name": "instance"})
+    FilterInstance(instance).transform(p)
 
 
 @pytest.mark.parametrize(

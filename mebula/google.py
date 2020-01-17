@@ -3,6 +3,7 @@ import contextlib
 import functools
 import json
 import operator
+import re
 import unittest.mock
 import urllib.request
 from collections import namedtuple
@@ -61,12 +62,14 @@ def parse_filter(filter_text: str) -> lark.Tree:
                     | "~"   -> matches
                     | "!~"  -> not_matches
 
-    term: "- " key ":" "*"                                  -> not_defined
-        | key ":" "*"                                       -> is_defined
-        | key value_comparator value                        -> compare
-        | key list_comparator value ((WS | ",") value)? ")" -> compare_list
+    term: "- " KEY ":" "*"                                  -> not_defined
+        | KEY ":" "*"                                       -> is_defined
+        | KEY value_comparator value                        -> compare
+        | KEY list_comparator value (_LIST_SEPARATOR value)* ")" -> compare_list
 
-    key: CNAME("."CNAME)*
+    _LIST_SEPARATOR: (WS | ",")
+
+    KEY: CNAME("."CNAME)*
     value: NUMBER
          | CHARACTER_SEQUENCE
          | STRING
@@ -93,34 +96,77 @@ class FilterInstance(lark.Transformer):
         super().__init__()
         self.instance = instance
 
+    @staticmethod
+    def _pattern_match(true_value: str, check_value: str):
+        if check_value.endswith("*"):
+            # TODO implement wildcard * prefix matches
+            raise NotImplementedError("Pattern prefix matching not implemented")
+        return check_value in true_value.split()
+
+    def _key_value(self, key: str):
+        true_value = self.instance
+        for key in key.split("."):
+            true_value = true_value[str(key)]
+        return true_value
+
     def start(self, tree: List[lark.Tree]):
         return all(tree)
 
     def compare_list(self, tree: List[lark.Tree]):
-        raise NotImplementedError
+        keys = tree[0]
+        try:
+            true_value = self._key_value(keys)
+        except KeyError:
+            # If a dotted name does not exist on the instance, return false
+            # Perhaps this should be smarter and e.g. return True on ``not_equals``
+            return False
+
+        operator_name = tree[1].data
+        operator_f = {"pattern": self._pattern_match, "equals": operator.eq}[
+            operator_name
+        ]
+
+        check_values = [str(v.children[0]) for v in tree[2:]]
+
+        return any(operator_f(true_value, v) for v in check_values)
 
     def compare(self, tree: List[lark.Tree]):
-        key = tree[0].children[0]  # TODO dotted names
+        keys = tree[0]
+        try:
+            true_value = self._key_value(keys)
+        except KeyError:
+            # If a dotted name does not exist on the instance, return false
+            # Perhaps this should be smarter and e.g. return True on ``not_equals``
+            return False
+
         operator_name = tree[1].data
-        value = tree[2].children[0]
         operator_f = {
-            # "pattern": None,
+            "pattern": self._pattern_match,
             "less_than": operator.lt,
             "less_than_equals": operator.le,
             "equals": operator.eq,
             "not_equals": operator.ne,
             "greater_than_equals": operator.ge,
             "greater_than": operator.gt,
-            # "matches": None,
-            # "not_matches": None,
+            "matches": lambda s, p: re.match(p, s),
+            "not_matches": lambda s, p: not re.match(p, s),
         }[operator_name]
-        return operator_f(self.instance[key], value)
+
+        check_value = tree[2].children[0]
+
+        return operator_f(true_value, check_value)
 
     def is_defined(self, tree: List[lark.Tree]):
-        raise NotImplementedError
+        key = tree[0]  # TODO dotted names
+        try:
+            self.instance[key]
+        except KeyError:
+            return False
+        else:
+            return True
 
     def not_defined(self, tree: List[lark.Tree]):
-        raise NotImplementedError
+        return not self.is_defined(tree)
 
     def logical_unary(self, tree: List[lark.Tree]):
         raise NotImplementedError
@@ -164,7 +210,7 @@ class GoogleComputeInstances:
 
     def insert(self, project: str, zone: str, body, alt=""):
         print("inserting", body)
-        return self.state.instances.append(GoogleComputeInstance(body))
+        return self.state.instances.append(GoogleComputeInstance(zone, body))
 
 
 class GoogleComputeInstance(collections.abc.Mapping):
@@ -172,12 +218,22 @@ class GoogleComputeInstance(collections.abc.Mapping):
     A dictionary version of the Instance resource
     """
 
-    def __init__(self, body):
+    def __init__(self, zone, body):
         # Should match google_api_client("compute", "v1").instances()._schema.get("Instance")
         self.data = {}
         self.data["name"] = body["name"]
         self.data["tags"] = body.get("tags", {})
         self.data["status"] = "RUNNING"
+        self.data["scheduling"] = body.get(
+            "scheduling",
+            {
+                "onHostMaintenance": "MIGRATE",
+                "automaticRestart": True,
+                "preemptible": False,
+                "nodeAffinities": [],
+            },
+        )
+        self.data["zone"] = zone
 
     def __getitem__(self, key):
         return self.data[key]
@@ -187,6 +243,9 @@ class GoogleComputeInstance(collections.abc.Mapping):
 
     def __len__(self):
         return len(self.data)
+
+    def __str__(self):
+        return str(self.data)
 
 
 def extract_path_parameters(path: str, template: str) -> Dict[str, str]:
