@@ -69,7 +69,7 @@ def test_parse_filter_simple_match_tree():
     assert key == "name"
 
     operator = term.children[1]
-    assert operator.data == "equals"
+    assert operator == "="
 
     value = term.children[2]
     assert value.data == "value"

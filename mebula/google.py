@@ -50,22 +50,22 @@ def parse_filter(filter_text: str) -> lark.Tree:
                            | "OR"      -> or
                            | WS_INLINE -> and
 
-    list_comparator: ":("   -> pattern
-                   | "=("   -> equals
-    value_comparator: ":"   -> pattern
-                    | "="   -> equals
-                    | "!="  -> not_equals
-                    | "<"   -> less_than
-                    | "<="  -> less_than_equals
-                    | ">"   -> greater_than
-                    | ">="  -> greater_than_equals
-                    | "~"   -> matches
-                    | "!~"  -> not_matches
+    LIST_COMPARATOR: ":("
+                   | "=("
+    VALUE_COMPARATOR: ":"
+                    | "="
+                    | "!="
+                    | "<"
+                    | "<="
+                    | ">"
+                    | ">="
+                    | "~"
+                    | "!~"
 
     term: "- " KEY ":" "*"                                  -> not_defined
         | KEY ":" "*"                                       -> is_defined
-        | KEY value_comparator value                        -> compare
-        | KEY list_comparator value (_LIST_SEPARATOR value)* ")" -> compare_list
+        | KEY VALUE_COMPARATOR value                        -> compare
+        | KEY LIST_COMPARATOR value (_LIST_SEPARATOR value)* ")" -> compare_list
 
     _LIST_SEPARATOR: (WS | ",")
 
@@ -121,8 +121,8 @@ class FilterInstance(lark.Transformer):
             # Perhaps this should be smarter and e.g. return True on ``not_equals``
             return False
 
-        operator_name = tree[1].data
-        operator_f = {"pattern": self._pattern_match, "equals": operator.eq}[
+        operator_name = tree[1]
+        operator_f = {":(": self._pattern_match, "=(": operator.eq}[
             operator_name
         ]
 
@@ -139,17 +139,17 @@ class FilterInstance(lark.Transformer):
             # Perhaps this should be smarter and e.g. return True on ``not_equals``
             return False
 
-        operator_name = tree[1].data
+        operator_name = tree[1]
         operator_f = {
-            "pattern": self._pattern_match,
-            "less_than": operator.lt,
-            "less_than_equals": operator.le,
-            "equals": operator.eq,
-            "not_equals": operator.ne,
-            "greater_than_equals": operator.ge,
-            "greater_than": operator.gt,
-            "matches": lambda s, p: re.match(p, s),
-            "not_matches": lambda s, p: not re.match(p, s),
+            ":": self._pattern_match,
+            "<": operator.lt,
+            "<=": operator.le,
+            "=": operator.eq,
+            "!=": operator.ne,
+            ">=": operator.ge,
+            ">": operator.gt,
+            "~": lambda s, p: re.match(p, s),
+            "!~": lambda s, p: not re.match(p, s),
         }[operator_name]
 
         check_value = tree[2].children[0]
