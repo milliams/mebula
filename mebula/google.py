@@ -2,13 +2,15 @@ import collections.abc
 import contextlib
 import functools
 import json
+import operator
 import unittest.mock
 import urllib.request
 from collections import namedtuple
-from typing import Any, Dict
+from typing import Any, Dict, List
 from urllib.parse import urlparse, parse_qs
 
 import googleapiclient.discovery  # type: ignore
+import lark  # type: ignore
 from googleapiclient.http import HttpMock  # type: ignore
 from googleapiclient.errors import HttpError  # type: ignore
 
@@ -23,6 +25,109 @@ def google_api_client(serviceName: str, version: str, *args, **kwargs):
     url = f"https://www.googleapis.com/discovery/v1/apis/{serviceName}/{version}/rest"
     data = urllib.request.urlopen(url).read().decode()
     return googleapiclient.discovery.build_from_document(data, http=HttpMock())
+
+
+def parse_filter(filter_text: str) -> lark.Tree:
+    """
+    https://cloud.google.com/sdk/gcloud/reference/topic/filters
+    """
+    grammar = """
+    start: _expression
+
+    _expression: term
+               | parenthesised
+               | logical_binary
+               | logical_unary
+
+    logical_unary: unary_logical_operator _expression
+    ?logical_binary: _expression binary_logical_operator _expression (binary_logical_operator _expression)*
+
+    ?parenthesised: "(" _expression ")"
+
+    unary_logical_operator: "NOT"      -> not
+    binary_logical_operator: "AND"     -> and
+                           | "OR"      -> or
+                           | WS_INLINE -> and
+
+    list_comparator: ":("   -> pattern
+                   | "=("   -> equals
+    value_comparator: ":"   -> pattern
+                    | "="   -> equals
+                    | "!="  -> not_equals
+                    | "<"   -> less_than
+                    | "<="  -> less_than_equals
+                    | ">"   -> greater_than
+                    | ">="  -> greater_than_equals
+                    | "~"   -> matches
+                    | "!~"  -> not_matches
+
+    term: "- " key ":" "*"                                  -> not_defined
+        | key ":" "*"                                       -> is_defined
+        | key value_comparator value                        -> compare
+        | key list_comparator value ((WS | ",") value)? ")" -> compare_list
+
+    key: CNAME("."CNAME)*
+    value: NUMBER
+         | CHARACTER_SEQUENCE
+         | STRING
+
+    STRING : /[ubf]?r?("(?!"").*?(?<!\\\\)(\\\\\\\\)*?"|'(?!'').*?(?<!\\\\)(\\\\\\\\)*?')/i
+
+    CHARACTER_SEQUENCE: (LETTER | NUMBER | "-" | "^" | ":" | "[" | "]" | "@" | "."
+                      | "*" | "!" | "£" | "$" | "%" | "*" | "|" | "\\\\" | "/" | "_"
+                      | "+" | "=" | "{" | "}" | ":" | ";" | "~" | "#" | "<" | ">" | "?")+
+
+    %import common.LETTER
+    %import common.NUMBER
+    %import common.CNAME
+    %import common.WS_INLINE
+    %import common.WS
+    %ignore WS_INLINE
+    """
+    parser = lark.Lark(grammar)
+    return parser.parse(filter_text)
+
+
+class FilterInstance(lark.Transformer):
+    def __init__(self, instance: "GoogleComputeInstance"):
+        super().__init__()
+        self.instance = instance
+
+    def start(self, tree: List[lark.Tree]):
+        return all(tree)
+
+    def compare_list(self, tree: List[lark.Tree]):
+        raise NotImplementedError
+
+    def compare(self, tree: List[lark.Tree]):
+        key = tree[0].children[0]  # TODO dotted names
+        operator_name = tree[1].data
+        value = tree[2].children[0]
+        operator_f = {
+            # "pattern": None,
+            "less_than": operator.lt,
+            "less_than_equals": operator.le,
+            "equals": operator.eq,
+            "not_equals": operator.ne,
+            "greater_than_equals": operator.ge,
+            "greater_than": operator.gt,
+            # "matches": None,
+            # "not_matches": None,
+        }[operator_name]
+        return operator_f(self.instance[key], value)
+
+    def is_defined(self, tree: List[lark.Tree]):
+        raise NotImplementedError
+
+    def not_defined(self, tree: List[lark.Tree]):
+        raise NotImplementedError
+
+    def logical_unary(self, tree: List[lark.Tree]):
+        raise NotImplementedError
+
+    def logical_binary(self, tree: List[lark.Tree]):
+        # TODO Error on multiple operators if they don't match
+        raise NotImplementedError
 
 
 class GoogleComputeInstances:
@@ -52,18 +157,9 @@ class GoogleComputeInstances:
 
     @staticmethod
     def _filter_instances(instances, filter=""):
-        # TODO Full query syntax from https://cloud.google.com/sdk/gcloud/reference/topic/filters
-        # Perhaps use lark
-        split_filter = filter.split("=")
-        if len(split_filter) > 2:
-            raise NotImplementedError
-
-        if split_filter == [""]:
-            yield from instances
-            return
-
+        tree = parse_filter(filter)
         for i in instances:
-            if i[split_filter[0]] == split_filter[1]:
+            if FilterInstance(i).transform(tree):
                 yield i
 
     def insert(self, project: str, zone: str, body, alt=""):
