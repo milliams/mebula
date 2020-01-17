@@ -122,9 +122,7 @@ class FilterInstance(lark.Transformer):
             return False
 
         operator_name = tree[1]
-        operator_f = {":(": self._pattern_match, "=(": operator.eq}[
-            operator_name
-        ]
+        operator_f = {":(": self._pattern_match, "=(": operator.eq}[operator_name]
 
         check_values = [str(v.children[0]) for v in tree[2:]]
 
