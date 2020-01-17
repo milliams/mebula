@@ -7,7 +7,7 @@ import re
 import unittest.mock
 import urllib.request
 from collections import namedtuple
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Union
 from urllib.parse import urlparse, parse_qs
 
 import googleapiclient.discovery  # type: ignore
@@ -112,7 +112,7 @@ class FilterInstance(lark.Transformer):
     def start(self, tree: List[lark.Tree]):
         return all(tree)
 
-    def compare_list(self, tree: List[lark.Tree]):
+    def compare_list(self, tree: List[Union[lark.Tree, lark.Token]]):
         keys = tree[0]
         try:
             true_value = self._key_value(keys)
@@ -130,7 +130,7 @@ class FilterInstance(lark.Transformer):
 
         return any(operator_f(true_value, v) for v in check_values)
 
-    def compare(self, tree: List[lark.Tree]):
+    def compare(self, tree: List[Union[lark.Tree, lark.Token]]):
         keys = tree[0]
         try:
             true_value = self._key_value(keys)
@@ -169,11 +169,24 @@ class FilterInstance(lark.Transformer):
         return not self.is_defined(tree)
 
     def logical_unary(self, tree: List[lark.Tree]):
-        raise NotImplementedError
+        if tree[0].data == "not":
+            return not tree[1]
+        else:
+            raise NotImplementedError(f"Unary operator {tree[0].data} not implemented")
 
     def logical_binary(self, tree: List[lark.Tree]):
-        # TODO Error on multiple operators if they don't match
-        raise NotImplementedError
+        data = tree[0::2]
+        operators = tree[1::2]
+        all_and = all(t.data == "and" for t in operators)
+        all_or = all(t.data == "or" for t in operators)
+        if not (all_and or all_or):
+            raise Exception("Ambiguous binary operators")
+        if all_and:
+            return all(data)
+        if all_or:
+            return any(data)
+
+        raise NotImplementedError("Boolean operator not implmented")
 
 
 class GoogleComputeInstances:

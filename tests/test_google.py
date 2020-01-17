@@ -114,14 +114,29 @@ def test_parse_filter_simple(filter_text):
         "(scheduling.automaticRestart = true) (cpuPlatform = 'Intel Skylake')",
         "cpuPlatform = 'Intel Skylake' OR (cpuPlatform = 'Intel Broadwell' AND scheduling.automaticRestart = true)",
         "(cpuPlatform = 'Intel Skylake' OR cpuPlatform = 'Intel Broadwell') AND scheduling.automaticRestart = true",
-        "cpuPlatform = 'Intel Skylake' OR cpuPlatform = 'Intel Broadwell' AND scheduling.automaticRestart = true",
         "NOT network=default",
         "a=a AND b=b AND c=c",
         "NOT a=a AND b=b",
     ],
 )
 def test_parse_filter_logical(filter_text):
-    parse_filter(filter_text)
+    print(filter_text)
+    p = parse_filter(filter_text)
+    instance = GoogleComputeInstance("z", {"name": "instance"})
+    FilterInstance(instance).transform(p)
+
+
+@pytest.mark.parametrize(
+    "filter_text",
+    [
+        "cpuPlatform = 'Intel Skylake' OR cpuPlatform = 'Intel Broadwell' AND scheduling.automaticRestart = true",
+    ],
+)
+def test_parse_filter_logical_ambiguous(filter_text):
+    p = parse_filter(filter_text)
+    instance = GoogleComputeInstance("z", {"name": "instance"})
+    with pytest.raises(Exception):
+        FilterInstance(instance).transform(p)
 
 
 @pytest.mark.parametrize(
