@@ -1,10 +1,11 @@
 import pytest  # type: ignore
 
-from mebula.dict_filter import parse_filter, FilterDict
+from mebula.dict_filter import parse_filter, filter_dict
 
 
 def test_parse_filter_simple_match_tree():
-    p = parse_filter("name=instance")
+    pattern = "name=instance"
+    p = parse_filter(pattern)
 
     term = p.children[0]
     assert term.data == "compare"
@@ -20,10 +21,10 @@ def test_parse_filter_simple_match_tree():
     assert value.children[0] == "instance"
 
     instance = {"name": "instance"}
-    assert FilterDict(instance).transform(p)
+    assert filter_dict(pattern, instance)
 
     nonstance = {"name": "nonstance"}
-    assert not FilterDict(nonstance).transform(p)
+    assert not filter_dict(pattern, nonstance)
 
 
 @pytest.mark.parametrize(
@@ -45,9 +46,8 @@ def test_parse_filter_simple_match_tree():
 )
 def test_parse_filter_simple(filter_text):
     print(filter_text)
-    p = parse_filter(filter_text)
     instance = {"name": "instance"}
-    FilterDict(instance).transform(p)
+    filter_dict(filter_text, instance)
 
 
 @pytest.mark.parametrize(
@@ -68,9 +68,8 @@ def test_parse_filter_simple(filter_text):
 )
 def test_parse_filter_logical(filter_text):
     print(filter_text)
-    p = parse_filter(filter_text)
     instance = {"name": "instance"}
-    FilterDict(instance).transform(p)
+    filter_dict(filter_text, instance)
 
 
 @pytest.mark.parametrize(
@@ -80,10 +79,9 @@ def test_parse_filter_logical(filter_text):
     ],
 )
 def test_parse_filter_logical_ambiguous(filter_text):
-    p = parse_filter(filter_text)
     instance = {"name": "instance"}
     with pytest.raises(Exception):
-        FilterDict(instance).transform(p)
+        filter_dict(filter_text, instance)
 
 
 @pytest.mark.parametrize(

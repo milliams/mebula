@@ -12,7 +12,7 @@ import googleapiclient.discovery  # type: ignore
 from googleapiclient.http import HttpMock  # type: ignore
 from googleapiclient.errors import HttpError  # type: ignore
 
-from .dict_filter import parse_filter, FilterDict
+from .dict_filter import filter_dict
 
 
 class GoogleState:
@@ -54,9 +54,8 @@ class GoogleComputeInstances:
 
     @staticmethod
     def _filter_instances(instances, filter=""):
-        tree = parse_filter(filter)
         for i in instances:
-            if FilterDict(i).transform(tree):
+            if filter_dict(filter, i):
                 yield i
 
     def insert(self, project: str, zone: str, body, alt=""):

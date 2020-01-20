@@ -5,7 +5,7 @@ from typing import List, Mapping, Union
 import lark  # type: ignore
 
 
-def parse_filter(filter_text: str) -> lark.Tree:
+def create_parser():
     """
     https://cloud.google.com/sdk/gcloud/reference/topic/filters
     """
@@ -64,8 +64,11 @@ def parse_filter(filter_text: str) -> lark.Tree:
     %import common.WS
     %ignore WS_INLINE
     """
-    parser = lark.Lark(grammar)
-    return parser.parse(filter_text)
+    return lark.Lark(grammar)
+
+
+def parse_filter(filter_text: str) -> lark.Tree:
+    return PARSER.parse(filter_text)
 
 
 class FilterDict(lark.Transformer):
@@ -162,3 +165,11 @@ class FilterDict(lark.Transformer):
             return any(data)
 
         raise NotImplementedError("Boolean operator not implmented")
+
+
+PARSER = create_parser()
+
+
+def filter_dict(pattern, dictionary):
+    p = parse_filter(pattern)
+    return FilterDict(dictionary).transform(p)
