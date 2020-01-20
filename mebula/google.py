@@ -12,7 +12,7 @@ import googleapiclient.discovery  # type: ignore
 from googleapiclient.http import HttpMock  # type: ignore
 from googleapiclient.errors import HttpError  # type: ignore
 
-from .dict_filter import filter_dict
+from .dict_filter import filter_dicts
 
 
 class GoogleState:
@@ -37,7 +37,7 @@ class GoogleComputeInstances:
 
     def list(self, project: str, zone: str, filter=None, alt="", body=None):
         if filter is not None:
-            instances = list(self._filter_instances(self.state.instances, filter[0]))
+            instances = list(filter_dicts(filter[0], self.state.instances))
         else:
             instances = self.state.instances
         return {"items": instances} if instances else {}
@@ -51,12 +51,6 @@ class GoogleComputeInstances:
             reason = f"Instance {instance} not found in {project}/{zone}"
             resp = Response(status="404", reason=reason)
             raise HttpError(resp, b"{}", uri="<NotImplemented>")
-
-    @staticmethod
-    def _filter_instances(instances, filter=""):
-        for i in instances:
-            if filter_dict(filter, i):
-                yield i
 
     def insert(self, project: str, zone: str, body, alt=""):
         print("inserting", body)

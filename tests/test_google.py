@@ -41,6 +41,7 @@ def test_google_list_filter():
         collection.insert(project="p", zone="z", body={"name": "foo1"}).execute()
         collection.insert(project="p", zone="z", body={"name": "foo2"}).execute()
         instances = collection.list(project="p", zone="z", filter="name=foo2").execute()
+        assert len(instances["items"]) == 1
         assert instances["items"][0]["name"] == "foo2"
 
 

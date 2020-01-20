@@ -1,6 +1,6 @@
 import operator
 import re
-from typing import List, Mapping, Union
+from typing import Iterable, List, Mapping, Union
 
 import lark  # type: ignore
 
@@ -170,6 +170,20 @@ class FilterDict(lark.Transformer):
 PARSER = create_parser()
 
 
-def filter_dict(pattern, dictionary):
+def match_dict(pattern: str, dictionary: dict):
+    """
+    Given a filter pattern and a dictionary, does the dictionary match the filter
+    Args:
+        pattern: a https://cloud.google.com/sdk/gcloud/reference/topic/filters compatible filter string
+        dictionary: a (nested) dictionary you wish to filter
+
+    Returns: True if the pattern matches and False otherwise
+
+    """
     p = parse_filter(pattern)
     return FilterDict(dictionary).transform(p)
+
+
+def filter_dicts(pattern: str, dictionaries: Iterable[dict]):
+    p = parse_filter(pattern)
+    return filter(lambda d: FilterDict(d).transform(p), dictionaries)

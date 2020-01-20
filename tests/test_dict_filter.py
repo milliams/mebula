@@ -1,6 +1,6 @@
 import pytest  # type: ignore
 
-from mebula.dict_filter import parse_filter, filter_dict
+from mebula.dict_filter import parse_filter, match_dict
 
 
 def test_parse_filter_simple_match_tree():
@@ -21,10 +21,10 @@ def test_parse_filter_simple_match_tree():
     assert value.children[0] == "instance"
 
     instance = {"name": "instance"}
-    assert filter_dict(pattern, instance)
+    assert match_dict(pattern, instance)
 
     nonstance = {"name": "nonstance"}
-    assert not filter_dict(pattern, nonstance)
+    assert not match_dict(pattern, nonstance)
 
 
 @pytest.mark.parametrize(
@@ -47,7 +47,7 @@ def test_parse_filter_simple_match_tree():
 def test_parse_filter_simple(filter_text):
     print(filter_text)
     instance = {"name": "instance"}
-    filter_dict(filter_text, instance)
+    match_dict(filter_text, instance)
 
 
 @pytest.mark.parametrize(
@@ -69,7 +69,7 @@ def test_parse_filter_simple(filter_text):
 def test_parse_filter_logical(filter_text):
     print(filter_text)
     instance = {"name": "instance"}
-    filter_dict(filter_text, instance)
+    match_dict(filter_text, instance)
 
 
 @pytest.mark.parametrize(
@@ -81,7 +81,7 @@ def test_parse_filter_logical(filter_text):
 def test_parse_filter_logical_ambiguous(filter_text):
     instance = {"name": "instance"}
     with pytest.raises(Exception):
-        filter_dict(filter_text, instance)
+        match_dict(filter_text, instance)
 
 
 @pytest.mark.parametrize(
