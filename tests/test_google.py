@@ -78,6 +78,9 @@ def test_parse_filter_simple_match_tree():
     instance = GoogleComputeInstance("z", {"name": "instance"})
     assert FilterInstance(instance).transform(p)
 
+    nonstance = GoogleComputeInstance("z", {"name": "nonstance"})
+    assert not FilterInstance(nonstance).transform(p)
+
 
 @pytest.mark.parametrize(
     "filter_text",
