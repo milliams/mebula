@@ -68,7 +68,7 @@ def parse_filter(filter_text: str) -> lark.Tree:
     return parser.parse(filter_text)
 
 
-class FilterInstance(lark.Transformer):
+class FilterDict(lark.Transformer):
     def __init__(self, instance: Mapping):
         super().__init__()
         self.instance = instance
