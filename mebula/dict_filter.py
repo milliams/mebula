@@ -5,9 +5,15 @@ from typing import Iterable, List, Mapping, Union
 import lark  # type: ignore
 
 
-def create_parser():
+__ALL__ = ["match_dict", "filter_dicts"]
+
+
+def create_parser() -> lark.Lark:
     """
+    This function implements a the filter language used by Google Cloud as described at
     https://cloud.google.com/sdk/gcloud/reference/topic/filters
+
+    Returns: the parser object
     """
     grammar = """
     start: _expression
@@ -68,6 +74,12 @@ def create_parser():
 
 
 def parse_filter(filter_text: str) -> lark.Tree:
+    """
+    Args:
+        filter_text: the filter string to parse
+
+    Returns: the parse tree
+    """
     return PARSER.parse(filter_text)
 
 
@@ -170,20 +182,29 @@ class FilterDict(lark.Transformer):
 PARSER = create_parser()
 
 
-def match_dict(pattern: str, dictionary: dict):
+def match_dict(pattern: str, dictionary: dict) -> bool:
     """
     Given a filter pattern and a dictionary, does the dictionary match the filter
+
     Args:
         pattern: a https://cloud.google.com/sdk/gcloud/reference/topic/filters compatible filter string
         dictionary: a (nested) dictionary you wish to filter
 
     Returns: True if the pattern matches and False otherwise
-
     """
     p = parse_filter(pattern)
     return FilterDict(dictionary).transform(p)
 
 
-def filter_dicts(pattern: str, dictionaries: Iterable[dict]):
+def filter_dicts(pattern: str, dictionaries: Iterable[dict]) -> Iterable[dict]:
+    """
+    Given a filter pattern and an iterable of dictionaries, return an iterable containing the matched entries.
+
+    Args:
+        pattern:a https://cloud.google.com/sdk/gcloud/reference/topic/filters compatible filter string
+        dictionaries: an iterable of (nested) dictionaries you wish to filter
+
+    Returns: an iterable of matched dictionaries
+    """
     p = parse_filter(pattern)
     return filter(lambda d: FilterDict(d).transform(p), dictionaries)
