@@ -7,7 +7,7 @@ import re
 import unittest.mock
 import urllib.request
 from collections import namedtuple
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, List, Mapping, Union
 from urllib.parse import urlparse, parse_qs
 
 import googleapiclient.discovery  # type: ignore
@@ -92,7 +92,7 @@ def parse_filter(filter_text: str) -> lark.Tree:
 
 
 class FilterInstance(lark.Transformer):
-    def __init__(self, instance: "GoogleComputeInstance"):
+    def __init__(self, instance: Mapping):
         super().__init__()
         self.instance = instance
 

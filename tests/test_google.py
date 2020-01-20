@@ -75,10 +75,10 @@ def test_parse_filter_simple_match_tree():
     assert value.data == "value"
     assert value.children[0] == "instance"
 
-    instance = GoogleComputeInstance("z", {"name": "instance"})
+    instance = {"name": "instance"}
     assert FilterInstance(instance).transform(p)
 
-    nonstance = GoogleComputeInstance("z", {"name": "nonstance"})
+    nonstance = {"name": "nonstance"}
     assert not FilterInstance(nonstance).transform(p)
 
 
