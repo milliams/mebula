@@ -23,6 +23,10 @@ def compute_client():
         yield get_client_from_json_dict(ComputeManagementClient, config_dict)
 
 
+def test_azure_empty(compute_client):
+    assert list(compute_client.virtual_machines.list("group")) == []
+
+
 def test_mock_azure(compute_client):
     c = {
         "location": "eastus",
