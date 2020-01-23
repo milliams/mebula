@@ -8,9 +8,14 @@ from collections import namedtuple
 from typing import Any, Dict
 from urllib.parse import urlparse, parse_qs
 
-import googleapiclient.discovery  # type: ignore
-from googleapiclient.http import HttpMock  # type: ignore
-from googleapiclient.errors import HttpError  # type: ignore
+try:
+    import googleapiclient.discovery  # type: ignore
+    from googleapiclient.http import HttpMock  # type: ignore
+    from googleapiclient.errors import HttpError  # type: ignore
+except ImportError:
+    raise ImportError(
+        "The mebula 'google' module requires the pip package ``mebula[google]``"
+    )
 
 from .dict_filter import filter_dicts
 

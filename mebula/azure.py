@@ -3,10 +3,15 @@ import unittest.mock
 from collections import defaultdict
 from typing import Dict, List
 
-import azure.mgmt.compute  # type: ignore
-import msrest  # type: ignore
-from azure.mgmt.compute.v2019_03_01 import models  # type: ignore
-from azure.mgmt.compute.v2019_03_01 import operations
+try:
+    import azure.mgmt.compute  # type: ignore
+    import msrest  # type: ignore
+    from azure.mgmt.compute.v2019_03_01 import models  # type: ignore
+    from azure.mgmt.compute.v2019_03_01 import operations
+except ImportError:
+    raise ImportError(
+        "The mebula 'azure' module requires the pip package ``mebula[azure]``"
+    )
 
 
 class AzureState:

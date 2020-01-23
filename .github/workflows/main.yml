@@ -18,7 +18,7 @@ jobs:
       - name: Install Poetry
         run: pip install poetry
       - name: Setup package
-        run: poetry install -E oracle
+        run: poetry install -E azure -E google -E oracle
       - name: Run flake8
         run: poetry run flake8
       - name: Run mypy
