@@ -4,6 +4,10 @@
 ### Added
 ### Changed
 
+## 0.2.2 - 2020-01-23
+### Fixed
+- Entry points now correctly return the mocker context manager
+
 ## 0.2.1 - 2020-01-23
 ### Fixed
 - Provider imports are now fully separated
