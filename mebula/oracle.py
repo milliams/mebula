@@ -5,7 +5,12 @@ import unittest.mock
 from collections import defaultdict
 from typing import Dict, List
 
-import oci  # type: ignore
+try:
+    import oci  # type: ignore
+except ImportError:
+    raise ImportError(
+        "The mebula 'oracle' module requires the pip package ``mebula[oracle]``"
+    )
 
 
 def oracle_arg_check(f):
