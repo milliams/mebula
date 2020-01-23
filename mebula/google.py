@@ -35,6 +35,8 @@ def google_api_client(serviceName: str, version: str, *args, **kwargs):
 class GoogleComputeInstances:
     """
     A reimplementation of the Google cloud server-side for the ``instances`` resource
+
+    Should have all of google_api_client("compute", "v1").instances()._resourceDesc["methods"]
     """
 
     def __init__(self, state: GoogleState):
@@ -98,6 +100,18 @@ class GoogleComputeInstance(collections.abc.Mapping):
 
 
 def extract_path_parameters(path: str, template: str) -> Dict[str, str]:
+    """
+    Args:
+        path: the path that request is being sent to
+        template: the schema path
+
+    Returns: a mapping of extracted path parameters
+
+    Examples:
+        >>> extract_path_parameters("/zone/foo/thing/blah", "/zone/{zone}/thing/{thing}")
+        {'zone': 'foo', 'thing': 'blah'}
+
+    """
     parameters = {}
     for p, t in zip(path.split("/"), template.split("/")):
         if t.startswith("{") and t.endswith("}"):

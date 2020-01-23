@@ -26,6 +26,6 @@ jobs:
       - name: Run black
         run: poetry run black --check .
       - name: Run pytest
-        run: poetry run coverage run --source=mebula -m pytest
+        run: poetry run coverage run --source=mebula -m pytest --doctest-modules
       - name: Report coverage
         run: poetry run coverage report
