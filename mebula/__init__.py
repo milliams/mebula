@@ -1,4 +1,13 @@
-from .google import mock_google
-from .oracle import mock_oracle
+def mock_azure():
+    from . import azure
+    azure.mock_azure()
 
-__all__ = ["mock_google", "mock_oracle"]
+
+def mock_google():
+    from . import google
+    google.mock_google()
+
+
+def mock_oracle():
+    from . import oracle
+    oracle.mock_oracle()

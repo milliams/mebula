@@ -4,6 +4,10 @@
 ### Added
 ### Changed
 
+## 0.2.1 - 2020-01-23
+### Fixed
+- Provider imports are now fully separated
+
 ## 0.2.0 - 2020-01-23
 ### Added
 - Support for Microsoft Azure
