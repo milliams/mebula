@@ -2,7 +2,7 @@ Mebula
 ======
 
 Mebula is a framework which you can use in your testing code to mock your calls to cloud providers' APIs.
-At the moment, Oracle's OCI and Google Cloud is supported.
+At the moment, Oracle's OCI, Google Cloud and Microsoft Azure are supported.
 
 Usage
 -----
