@@ -32,3 +32,7 @@ jobs:
         run: poetry run coverage run --source=mebula -m pytest --doctest-modules
       - name: Report coverage
         run: poetry run coverage report
+      - name: Install resuse
+        run: pip install reuse
+      - name: Check REUSE spec
+        run: reuse lint
