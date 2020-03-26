@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: © 2020 Matt Williams <matt@milliams.com>
+# SPDX-License-Identifier: MIT
+
 import collections.abc
 import contextlib
 import functools

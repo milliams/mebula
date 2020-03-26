@@ -1,5 +1,10 @@
+# SPDX-FileCopyrightText: © 2020 Matt Williams <matt@milliams.com>
+# SPDX-License-Identifier: CC0-1.0
+
 dist
 .idea
 .mypy_cache
 __pycache__
 htmlcov
+mebula.egg-info
+poetry.lock

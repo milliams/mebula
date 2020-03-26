@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: © 2020 Matt Williams <matt@milliams.com>
+# SPDX-License-Identifier: MIT
+
 import pytest  # type: ignore
 from azure.common.client_factory import get_client_from_json_dict  # type: ignore
 from azure.mgmt.compute import ComputeManagementClient  # type: ignore

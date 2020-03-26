@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: © 2020 Matt Williams <matt@milliams.com>
+# SPDX-License-Identifier: MIT
+
 import pytest  # type: ignore
 
 from mebula.dict_filter import parse_filter, match_dict

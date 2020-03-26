@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: © 2020 Matt Williams <matt@milliams.com>
+# SPDX-License-Identifier: MIT
+
 import googleapiclient.discovery  # type: ignore
 import googleapiclient.errors  # type: ignore
 import pytest  # type: ignore
