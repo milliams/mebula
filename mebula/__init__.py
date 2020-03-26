@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: © 2020 Matt Williams <matt@milliams.com>
 # SPDX-License-Identifier: MIT
 
+
 def mock_azure():
     from . import azure
 
