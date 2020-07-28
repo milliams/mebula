@@ -151,7 +151,7 @@ class FilterDict(lark.Transformer):
 
         return operator_f(true_value, check_value)
 
-    def is_defined(self, tree: List[lark.Tree]):
+    def is_defined(self, tree: List[lark.Token]):
         key = tree[0]  # TODO dotted names
         try:
             self.instance[key]
@@ -160,18 +160,18 @@ class FilterDict(lark.Transformer):
         else:
             return True
 
-    def not_defined(self, tree: List[lark.Tree]):
+    def not_defined(self, tree: List[lark.Token]):
         return not self.is_defined(tree)
 
-    def logical_unary(self, tree: List[lark.Tree]):
+    def logical_unary(self, tree: Tuple[lark.Tree, bool]):
         if tree[0].data == "not":
             return not tree[1]
         else:
             raise NotImplementedError(f"Unary operator {tree[0].data} not implemented")
 
-    def logical_binary(self, tree: List[lark.Tree]):
-        data = tree[0::2]
-        operators = tree[1::2]
+    def logical_binary(self, tree):
+        data: List[bool] = tree[0::2]
+        operators: List[lark.Tree] = tree[1::2]
         all_and = all(t.data == "and" for t in operators)
         all_or = all(t.data == "or" for t in operators)
         if not (all_and or all_or):
