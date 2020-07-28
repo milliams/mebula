@@ -151,10 +151,11 @@ class FilterDict(lark.Transformer):
 
         return operator_f(true_value, check_value)
 
-    def is_defined(self, tree: List[lark.Token]):
-        key = tree[0]  # TODO dotted names
+    def is_defined(self, dotted_key_name: List[lark.Token]):
+        d = self.instance
         try:
-            self.instance[key]
+            for key in dotted_key_name[0].split("."):
+                d = d[key]
         except KeyError:
             return False
         else:

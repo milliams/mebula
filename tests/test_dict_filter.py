@@ -112,3 +112,21 @@ def test_compare_list(filter_text):
     print(filter_text)
     instance = {"zone": "europe-west1-d"}
     assert match_dict(filter_text, instance)
+
+
+@pytest.mark.parametrize(
+    "filter_text, match",
+    [
+        ("name :*", True),
+        ("- name :*", False),
+        ("- zone:*", True),
+        ("zone:*", False),
+
+        ("l1:*", True),
+        ("l1.l2:*", True),
+    ],
+)
+def test_is_defined(filter_text, match):
+    print(filter_text)
+    instance = {"name": "instance", "l1": {"l2": "foo"}}
+    assert match_dict(filter_text, instance) is match
