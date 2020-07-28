@@ -82,7 +82,7 @@ def test_parse_filter_logical(filter_text):
 )
 def test_parse_filter_logical_ambiguous(filter_text):
     instance = {"name": "instance"}
-    with pytest.raises(Exception):
+    with pytest.raises(SyntaxError):
         match_dict(filter_text, instance)
 
 

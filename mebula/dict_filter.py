@@ -176,7 +176,7 @@ class FilterDict(lark.Transformer):
         all_and = all(t.data == "and" for t in operators)
         all_or = all(t.data == "or" for t in operators)
         if not (all_and or all_or):
-            raise Exception("Ambiguous binary operators")
+            raise SyntaxError("Ambiguous binary operators")
         if all_and:
             return all(data)
         if all_or:
@@ -199,7 +199,10 @@ def match_dict(pattern: str, dictionary: dict) -> bool:
     Returns: True if the pattern matches and False otherwise
     """
     p = parse_filter(pattern)
-    return FilterDict(dictionary).transform(p)
+    try:
+        return FilterDict(dictionary).transform(p)
+    except lark.exceptions.VisitError as e:
+        raise e.orig_exc
 
 
 def filter_dicts(pattern: str, dictionaries: Iterable[dict]) -> Iterable[dict]:
@@ -213,4 +216,7 @@ def filter_dicts(pattern: str, dictionaries: Iterable[dict]) -> Iterable[dict]:
     Returns: an iterable of matched dictionaries
     """
     p = parse_filter(pattern)
-    return filter(lambda d: FilterDict(d).transform(p), dictionaries)
+    try:
+        return filter(lambda d: FilterDict(d).transform(p), dictionaries)
+    except lark.exceptions.VisitError as e:
+        raise e.orig_exc
