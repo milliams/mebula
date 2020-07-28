@@ -37,7 +37,7 @@ class MockPoller:
 class VirtualMachinesOperations(operations.VirtualMachinesOperations):
     def __init__(self, state: AzureState):
         self.models: Dict[str, msrest.serialization.Model] = {
-            k: v for k, v in models.__dict__.items() if isinstance(v, type)
+            k: v for k, v in models.__dict__.items() if type(v) == type
         }
         self.state = state
 
