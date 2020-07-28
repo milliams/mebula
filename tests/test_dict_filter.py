@@ -11,17 +11,16 @@ def test_parse_filter_simple_match_tree():
     p = parse_filter(pattern)
 
     term = p.children[0]
-    assert term.data == "compare"
+    assert term.data == "compare"  # type: ignore
 
-    key = term.children[0]
+    key = term.children[0]  # type: ignore
     assert key == "name"
 
-    operator = term.children[1]
+    operator = term.children[1]  # type: ignore
     assert operator == "="
 
-    value = term.children[2]
-    assert value.data == "value"
-    assert value.children[0] == "instance"
+    value = term.children[2]  # type: ignore
+    assert value == "instance"
 
     instance = {"name": "instance"}
     assert match_dict(pattern, instance)
@@ -97,3 +96,19 @@ def test_parse_filter_logical_ambiguous(filter_text):
 )
 def test_parse_filter(filter_text):
     parse_filter(filter_text)
+
+
+@pytest.mark.parametrize(
+    "filter_text",
+    [
+        "zone:( europe-west1-d )",
+        "zone:( europe-west1-d, other-zone )",
+        "zone:( europe-west1-d other-zone )",
+        "zone:( other-zone europe-west1-d )",
+        "zone:( other-zone, europe-west1-d )",
+    ],
+)
+def test_compare_list(filter_text):
+    print(filter_text)
+    instance = {"zone": "europe-west1-d"}
+    assert match_dict(filter_text, instance)

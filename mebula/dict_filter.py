@@ -3,7 +3,7 @@
 
 import operator
 import re
-from typing import Iterable, List, Mapping, Union
+from typing import Iterable, List, Mapping, Union, Tuple
 
 import lark  # type: ignore
 
@@ -48,15 +48,17 @@ def create_parser() -> lark.Lark:
                     | "~"
                     | "!~"
 
-    term: "- " KEY ":" "*"                                  -> not_defined
-        | KEY ":" "*"                                       -> is_defined
-        | KEY VALUE_COMPARATOR value                        -> compare
-        | KEY LIST_COMPARATOR value (_LIST_SEPARATOR value)* ")" -> compare_list
+    term: "- " KEY ":" "*"                   -> not_defined
+        | KEY ":" "*"                        -> is_defined
+        | KEY VALUE_COMPARATOR _value        -> compare
+        | KEY LIST_COMPARATOR list_items ")" -> compare_list
 
     _LIST_SEPARATOR: (WS | ",")
 
+    list_items: _value (_LIST_SEPARATOR _value)*
+
     KEY: CNAME("."CNAME)*
-    value: NUMBER
+    _value: NUMBER
          | CHARACTER_SEQUENCE
          | STRING
 
@@ -107,7 +109,7 @@ class FilterDict(lark.Transformer):
     def start(self, tree: List[lark.Tree]):
         return all(tree)
 
-    def compare_list(self, tree: List[Union[lark.Tree, lark.Token]]):
+    def compare_list(self, tree: Tuple[lark.Token, lark.Token, lark.Tree]):
         keys = tree[0]
         try:
             true_value = self._key_value(keys)
@@ -119,11 +121,11 @@ class FilterDict(lark.Transformer):
         operator_name = tree[1]
         operator_f = {":(": self._pattern_match, "=(": operator.eq}[operator_name]
 
-        check_values = [str(v.children[0]) for v in tree[2:]]
+        check_values = [str(v) for v in tree[2].children]
 
         return any(operator_f(true_value, v) for v in check_values)
 
-    def compare(self, tree: List[Union[lark.Tree, lark.Token]]):
+    def compare(self, tree: Tuple[lark.Token, lark.Token, lark.Token]):
         keys = tree[0]
         try:
             true_value = self._key_value(keys)
@@ -145,7 +147,7 @@ class FilterDict(lark.Transformer):
             "!~": lambda s, p: not re.match(p, s),
         }[operator_name]
 
-        check_value = tree[2].children[0]
+        check_value = tree[2]
 
         return operator_f(true_value, check_value)
 
