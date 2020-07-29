@@ -107,7 +107,9 @@ class FilterDict(lark.Transformer):
             true_value = true_value[str(key)]
         return true_value
 
-    def compare_list(self, key: lark.Token, operator_name: lark.Token, list_items: lark.Tree):
+    def compare_list(
+        self, key: lark.Token, operator_name: lark.Token, list_items: lark.Tree
+    ):
         try:
             true_value = self._key_value(key)
         except KeyError:
@@ -160,7 +162,9 @@ class FilterDict(lark.Transformer):
         if unary_operator.data == "not":
             return not data
         else:
-            raise NotImplementedError(f"Unary operator {unary_operator.data} not implemented")
+            raise NotImplementedError(
+                f"Unary operator {unary_operator.data} not implemented"
+            )
 
     @lark.v_args(inline=False)
     def logical_binary(self, tree):

@@ -120,7 +120,6 @@ def test_compare_list(filter_text):
         ("- name :*", False),
         ("- zone:*", True),
         ("zone:*", False),
-
         ("l1:*", True),
         ("l1.l2:*", True),
     ],
