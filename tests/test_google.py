@@ -1,11 +1,16 @@
 # SPDX-FileCopyrightText: © 2020 Matt Williams <matt@milliams.com>
 # SPDX-License-Identifier: MIT
+import inspect
 
 import googleapiclient.discovery  # type: ignore
 import googleapiclient.errors  # type: ignore
 import pytest  # type: ignore
 
-from mebula.google import mock_google, extract_path_parameters
+from mebula.google import (
+    mock_google,
+    extract_path_parameters,
+    get_resource_class_method,
+)
 
 
 def test_google_empty():
@@ -91,3 +96,28 @@ def test_get_machine_types():
         )
         assert "name" in machine_type
         assert machine_type["name"] == "n1-standard-1"
+
+
+@pytest.mark.parametrize(
+    "api, resource, method",
+    [
+        ("compute", "instances", "list"),
+        ("compute", "instances", "get"),
+        ("compute", "instances", "insert"),
+        ("compute", "machineTypes", "list"),
+        ("compute", "machineTypes", "get"),
+    ],
+)
+def test_function_args(api, resource, method):
+    with mock_google():
+        compute = googleapiclient.discovery.build(api, "v1")
+        # Get the mebula version of the method
+        c, f = get_resource_class_method(api, resource, method)
+        # Get the arguments (ignoring `self` of the mebula method)
+        m_args = list(inspect.signature(f).parameters.items())[1:]
+        # Get the positional arguments of the Google function
+        g_method = getattr(compute, resource)()._resourceDesc["methods"][method]
+        g_args = g_method["parameterOrder"]
+        # Make sure that all the Google arguments are present and in the correct order
+        for i, arg in enumerate(g_args):
+            assert m_args[i][0] == arg

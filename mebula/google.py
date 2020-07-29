@@ -181,6 +181,31 @@ def extract_path_parameters(path: str, template: str) -> Dict[str, str]:
     return parameters
 
 
+def get_resource_class_method(api, resource, method):
+    collection_map = {
+        "compute": {
+            "instances": GoogleComputeInstances,
+            "machineTypes": GoogleComputeMachineTypes,
+        }
+    }
+
+    try:
+        resource_class = collection_map[api][resource]
+    except KeyError:
+        raise NotImplementedError(
+            f"Resource collection {api}.{resource} is not implemented"
+        )
+
+    try:
+        resource_method = getattr(resource_class, method)
+    except AttributeError:
+        raise NotImplementedError(
+            f"Method {api}.{resource}.{method} is not implemented"
+        )
+
+    return resource_class, resource_method
+
+
 def google_execute(
     request: googleapiclient.http.HttpRequest, state: GoogleState
 ) -> dict:
@@ -201,29 +226,10 @@ def google_execute(
 
     all_parameters: Dict[str, Any] = {**path_parameters, **query, **{"body": body}}
 
-    collection_map = {
-        "compute": {
-            "instances": GoogleComputeInstances,
-            "machineTypes": GoogleComputeMachineTypes,
-        }
-    }
-
-    try:
-        resource_class = collection_map[api][resource]
-    except KeyError:
-        raise NotImplementedError(
-            f"Resource collection {api}.{resource} is not implemented"
-        )
-
+    resource_class, resource_method = get_resource_class_method(api, resource, method)
     resource_object = resource_class(state)
-
-    try:
-        resource_method = getattr(resource_object, method)
-    except AttributeError:
-        raise NotImplementedError(
-            f"Method {api}.{resource}.{method} is not implemented"
-        )
-    return resource_method(**all_parameters)
+    print(request.uri)
+    return resource_method(resource_object, **all_parameters)
 
 
 @contextlib.contextmanager
