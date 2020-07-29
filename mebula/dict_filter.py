@@ -88,6 +88,7 @@ def parse_filter(filter_text: str) -> lark.Tree:
     return PARSER.parse(filter_text)
 
 
+@lark.v_args(inline=True)
 class FilterDict(lark.Transformer):
     def __init__(self, instance: Mapping):
         super().__init__()
@@ -106,7 +107,6 @@ class FilterDict(lark.Transformer):
             true_value = true_value[str(key)]
         return true_value
 
-    @lark.v_args(inline=True)
     def compare_list(self, key: lark.Token, operator_name: lark.Token, list_items: lark.Tree):
         try:
             true_value = self._key_value(key)
@@ -121,7 +121,6 @@ class FilterDict(lark.Transformer):
 
         return any(operator_f(true_value, v) for v in check_values)
 
-    @lark.v_args(inline=True)
     def compare(self, key: lark.Token, operator_name: lark.Token, value: lark.Token):
         try:
             true_value = self._key_value(key)
@@ -144,7 +143,6 @@ class FilterDict(lark.Transformer):
 
         return operator_f(true_value, value)
 
-    @lark.v_args(inline=True)
     def is_defined(self, dotted_key_name: lark.Token):
         d = self.instance
         try:
@@ -155,17 +153,16 @@ class FilterDict(lark.Transformer):
         else:
             return True
 
-    @lark.v_args(inline=True)
     def not_defined(self, dotted_key_name: lark.Token):
         return not self.is_defined(dotted_key_name)
 
-    @lark.v_args(inline=True)
     def logical_unary(self, operator: lark.Tree, data: bool):
         if operator.data == "not":
             return not data
         else:
             raise NotImplementedError(f"Unary operator {operator.data} not implemented")
 
+    @lark.v_args(inline=False)
     def logical_binary(self, tree):
         data: List[bool] = tree[0::2]
         operators: List[lark.Tree] = tree[1::2]
