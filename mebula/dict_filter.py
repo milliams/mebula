@@ -3,7 +3,7 @@
 
 import operator
 import re
-from typing import Iterable, List, Mapping, Union, Tuple
+from typing import Iterable, List, Mapping
 
 import lark  # type: ignore
 
