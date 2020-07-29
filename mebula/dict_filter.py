@@ -156,11 +156,11 @@ class FilterDict(lark.Transformer):
     def not_defined(self, dotted_key_name: lark.Token):
         return not self.is_defined(dotted_key_name)
 
-    def logical_unary(self, operator: lark.Tree, data: bool):
-        if operator.data == "not":
+    def logical_unary(self, unary_operator: lark.Tree, data: bool):
+        if unary_operator.data == "not":
             return not data
         else:
-            raise NotImplementedError(f"Unary operator {operator.data} not implemented")
+            raise NotImplementedError(f"Unary operator {unary_operator.data} not implemented")
 
     @lark.v_args(inline=False)
     def logical_binary(self, tree):
