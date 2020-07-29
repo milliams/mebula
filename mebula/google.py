@@ -26,6 +26,34 @@ from .dict_filter import filter_dicts
 class GoogleState:
     def __init__(self):
         self.instances = []
+        self.machine_types = [
+            {
+                "id": "3001",
+                "creationTimestamp": "1969-12-31T16:00:00.000-08:00",
+                "name": "n1-standard-1",
+                "description": "1 vCPU, 3.75 GB RAM",
+                "guestCpus": 1,
+                "memoryMb": 3840,
+                "imageSpaceGb": 10,
+                "maximumPersistentDisks": 128,
+                "maximumPersistentDisksSizeGb": "263168",
+                "isSharedCpu": False,
+                "kind": "compute#machineType",
+            },
+            {
+                "id": "3002",
+                "creationTimestamp": "1969-12-31T16:00:00.000-08:00",
+                "name": "n1-standard-2",
+                "description": "2 vCPUs, 7.5 GB RAM",
+                "guestCpus": 2,
+                "memoryMb": 7680,
+                "imageSpaceGb": 10,
+                "maximumPersistentDisks": 128,
+                "maximumPersistentDisksSizeGb": "263168",
+                "isSharedCpu": False,
+                "kind": "compute#machineType",
+            },
+        ]
 
 
 @functools.lru_cache(maxsize=128)
@@ -102,6 +130,36 @@ class GoogleComputeInstance(collections.abc.Mapping):
         return str(self.data)
 
 
+class GoogleComputeMachineTypes:
+    """
+    A reimplementation of the Google cloud server-side for the ``machineTypes`` resource
+
+    Should have all of google_api_client("compute", "v1").machineTypes()._resourceDesc["methods"]
+    """
+
+    def __init__(self, state: GoogleState):
+        self.state = state
+
+    def list(self, project: str, zone: str, filter=None, alt="", body=None):
+        if filter is not None:
+            machine_types = list(filter_dicts(filter[0], self.state.machine_types))
+        else:
+            machine_types = self.state.machine_types
+        return {"items": machine_types} if machine_types else {}
+
+    def get(self, project: str, zone: str, machineType: str, alt="", body=None):
+        machine_types = [
+            i for i in self.state.machine_types if i["name"] == machineType
+        ]
+        if machine_types:
+            return machine_types[0]
+        else:
+            Response = namedtuple("Response", ["status", "reason"])
+            reason = f"Instance {machineType} not found in {project}/{zone}"
+            resp = Response(status="404", reason=reason)
+            raise HttpError(resp, b"{}", uri="<NotImplemented>")
+
+
 def extract_path_parameters(path: str, template: str) -> Dict[str, str]:
     """
     Args:
@@ -143,7 +201,12 @@ def google_execute(
 
     all_parameters: Dict[str, Any] = {**path_parameters, **query, **{"body": body}}
 
-    collection_map = {"compute": {"instances": GoogleComputeInstances}}
+    collection_map = {
+        "compute": {
+            "instances": GoogleComputeInstances,
+            "machineTypes": GoogleComputeMachineTypes,
+        }
+    }
 
     try:
         resource_class = collection_map[api][resource]
