@@ -39,7 +39,7 @@ def test_parse_filter_simple_match_tree():
         "name:'Compute Engine default service account'",
         "name != example-instance",
         "tags.items~^production$",
-        #"name~^es",
+        "name~^es",
         "scheduling.automaticRestart = false",
         "zone :*",
         "- zone:*",

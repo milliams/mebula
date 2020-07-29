@@ -137,8 +137,8 @@ class FilterDict(lark.Transformer):
             "!=": operator.ne,
             ">=": operator.ge,
             ">": operator.gt,
-            "~": lambda s, p: re.match(p, s),
-            "!~": lambda s, p: not re.match(p, s),
+            "~": lambda s, p: bool(re.match(p, s)),
+            "!~": lambda s, p: not bool(re.match(p, s)),
         }[operator_name]
 
         return operator_f(true_value, value)
