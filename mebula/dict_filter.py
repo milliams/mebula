@@ -145,7 +145,7 @@ class FilterDict(lark.Transformer):
 
         # Strip the start and end `"` or `'`
         if value.type == "STRING":
-            value = value[1:-1]
+            value = value.update("CHARACTER_SEQUENCE", value[1:-1])
 
         return operator_f(true_value, value)
 
