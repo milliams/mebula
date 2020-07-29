@@ -143,6 +143,10 @@ class FilterDict(lark.Transformer):
             "!~": lambda s, p: not bool(re.match(p, s)),
         }[operator_name]
 
+        # Strip the start and end `"` or `'`
+        if value.type == "STRING":
+            value = value[1:-1]
+
         return operator_f(true_value, value)
 
     def is_defined(self, dotted_key_name: lark.Token):
