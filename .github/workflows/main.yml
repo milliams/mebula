@@ -36,3 +36,5 @@ jobs:
         run: pip install reuse
       - name: Check REUSE spec
         run: reuse lint
+      - name: Test that package builds
+        run: poetry build
