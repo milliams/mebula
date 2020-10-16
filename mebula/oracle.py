@@ -76,6 +76,8 @@ class OracleComputeClient:
         self, launch_instance_details: oci.core.models.LaunchInstanceDetails, **kwargs
     ):
         instance = oci.core.models.Instance(
+            id="ocid1.instance.oc1.."
+            + "".join(random.choices(string.ascii_lowercase, k=10)),
             availability_domain=launch_instance_details.availability_domain,
             display_name=launch_instance_details.display_name,
             freeform_tags=launch_instance_details.freeform_tags,

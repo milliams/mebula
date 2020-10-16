@@ -8,8 +8,9 @@ SPDX-License-Identifier: MIT
 ## Unreleased
 ### Added
 - Google: Added IP addresses to instances
+- Oracle: Added id to instances
 
-## 0.2.4 - 2020-01-23
+## 0.2.4 - 2020-10-16
 ### Added
 - Oracle: Add VNIC attachment support
 ### Fixed
