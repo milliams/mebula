@@ -7,6 +7,7 @@ import functools
 import ipaddress
 import json
 import random
+import string
 import unittest.mock
 import urllib.request
 from collections import namedtuple
@@ -93,7 +94,6 @@ class GoogleComputeInstances:
             raise HttpError(resp, b"{}", uri="<NotImplemented>")
 
     def insert(self, project: str, zone: str, body, alt=""):
-        print("inserting", body)
         return self.state.instances.append(GoogleComputeInstance(zone, body))
 
 
@@ -105,6 +105,7 @@ class GoogleComputeInstance(collections.abc.Mapping):
     def __init__(self, zone, body):
         # Should match google_api_client("compute", "v1").instances()._schema.get("Instance")
         self.data = {}
+        self.data["id"] = "".join(random.choices(string.ascii_lowercase, k=10))
         self.data["name"] = body["name"]
         self.data["tags"] = body.get("tags", {})
         self.data["status"] = "RUNNING"
