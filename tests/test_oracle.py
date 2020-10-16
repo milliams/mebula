@@ -23,6 +23,7 @@ def test_oracle_one_round_trip():
         instances = compute.list_instances("compartment_id").data
         assert len(instances) == 1
         assert instances[0].display_name == "foo"
+        assert instances[0].compartment_id == "compartment_id"
 
 
 def test_get_instance_ip():

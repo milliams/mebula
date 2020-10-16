@@ -7,6 +7,10 @@ SPDX-License-Identifier: MIT
 
 ## Unreleased
 
+## 0.2.6 - 2020-10-16
+### Added
+- Oracle: Added compartment_id to instances
+
 ## 0.2.5 - 2020-10-16
 ### Added
 - Google: Added IP addresses to instances
