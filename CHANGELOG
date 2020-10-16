@@ -6,10 +6,18 @@ SPDX-License-Identifier: MIT
 # Changelog
 
 ## Unreleased
+
+## 0.2.4 - 2020-01-23
 ### Added
 - Oracle: Add VNIC attachment support
 ### Fixed
 - Google: Check mock methods have the correct arguments
+
+## 0.2.3 - 2020-07-29
+### Added
+- Google: Add support for compute.machineTypes
+### Changed
+- Google: Stricter parsing of filters
 
 ## 0.2.2 - 2020-01-23
 ### Fixed
