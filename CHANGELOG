@@ -7,7 +7,9 @@ SPDX-License-Identifier: MIT
 
 ## Unreleased
 ### Added
-### Changed
+- Oracle: Add VNIC attachment support
+### Fixed
+- Google: Check mock methods have the correct arguments
 
 ## 0.2.2 - 2020-01-23
 ### Fixed
