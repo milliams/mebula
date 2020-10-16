@@ -104,7 +104,7 @@ class GoogleComputeInstance(collections.abc.Mapping):
 
     def __init__(self, zone, body):
         # Should match google_api_client("compute", "v1").instances()._schema.get("Instance")
-        self.data = {}
+        self.data: Dict[str, Any] = {}
         self.data["id"] = "".join(random.choices(string.ascii_lowercase, k=10))
         self.data["name"] = body["name"]
         self.data["tags"] = body.get("tags", {})
