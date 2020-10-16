@@ -53,6 +53,17 @@ def test_google_list_filter():
         assert instances["items"][0]["name"] == "foo2"
 
 
+def test_google_generate_instance_ip():
+    with mock_google():
+        compute = googleapiclient.discovery.build("compute", "v1")
+        compute.instances().insert(
+            project="foo", zone="bar", body={"name": "foo", "tags": {}}
+        ).execute()
+
+        i = compute.instances().get(project="foo", zone="bar", instance="foo").execute()
+        assert i["networkInterfaces"][0]["networkIP"]
+
+
 def test_extract_path_parameters():
     path = "/compute/v1/projects/prfoo/zones/zbar/instances"
     template = "/compute/v1/projects/{project}/zones/{zone}/instances"

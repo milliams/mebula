@@ -4,7 +4,9 @@
 import collections.abc
 import contextlib
 import functools
+import ipaddress
 import json
+import random
 import unittest.mock
 import urllib.request
 from collections import namedtuple
@@ -116,6 +118,17 @@ class GoogleComputeInstance(collections.abc.Mapping):
             },
         )
         self.data["zone"] = zone
+
+        # For now we'll make a single static network and grab IPs from it
+        # In future this should come from a VPC and subnet
+        fake_network = ipaddress.IPv4Network("10.0.0.0/24")
+        ip = ipaddress.IPv4Address(
+            random.randrange(
+                int(fake_network.network_address) + 1,
+                int(fake_network.broadcast_address) - 1,
+            )
+        )
+        self.data["networkInterfaces"] = [{"networkIP": str(ip)}]
 
     def __getitem__(self, key):
         return self.data[key]

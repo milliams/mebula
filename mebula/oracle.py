@@ -84,6 +84,8 @@ class OracleComputeClient:
         )
         self._state.instances[launch_instance_details.compartment_id].append(instance)
 
+        # For now we'll make a single static network and grab IPs from it
+        # In future this should come from a VPC and subnet
         fake_network = ipaddress.IPv4Network("10.0.0.0/24")
         ip = ipaddress.IPv4Address(
             random.randrange(

@@ -6,6 +6,8 @@ SPDX-License-Identifier: MIT
 # Changelog
 
 ## Unreleased
+### Added
+- Google: Added IP addresses to instances
 
 ## 0.2.4 - 2020-01-23
 ### Added
