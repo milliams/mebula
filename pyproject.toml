@@ -3,7 +3,7 @@
 
 [tool.poetry]
 name = "mebula"
-version = "0.2.7"
+version = "0.2.8"
 description = ""
 authors = ["Matt Williams <matt@milliams.com>"]
 license = "MIT"
