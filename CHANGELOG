@@ -7,6 +7,9 @@ SPDX-License-Identifier: MIT
 
 ## Unreleased
 
+## 0.2.8 - 2020-10-16
+- Testing release CI
+
 ## 0.2.7 - 2020-10-16
 ### Added
 - Google: Added id to instances
