@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: MIT
 
 import pytest  # type: ignore
-from azure.common.client_factory import get_client_from_json_dict  # type: ignore
+from azure.identity import DefaultAzureCredential
 from azure.mgmt.compute import ComputeManagementClient  # type: ignore
 
 from mebula.azure import mock_azure
@@ -11,19 +11,8 @@ from mebula.azure import mock_azure
 @pytest.fixture
 def compute_client():
     with mock_azure():
-        config_dict = {
-            "clientId": "ad735158-65ca-11e7-ba4d-ecb1d756380e",
-            "clientSecret": "b70bb224-65ca-11e7-810c-ecb1d756380e",
-            "subscriptionId": "bfc42d3a-65ca-11e7-95cf-ecb1d756380e",
-            "tenantId": "c81da1d8-65ca-11e7-b1d1-ecb1d756380e",
-            "activeDirectoryEndpointUrl": "https://login.microsoftonline.com",
-            "resourceManagerEndpointUrl": "https://management.azure.com/",
-            "activeDirectoryGraphResourceId": "https://graph.windows.net/",
-            "sqlManagementEndpointUrl": "https://management.core.windows.net:8443/",
-            "galleryEndpointUrl": "https://gallery.azure.com/",
-            "managementEndpointUrl": "https://management.core.windows.net/",
-        }
-        yield get_client_from_json_dict(ComputeManagementClient, config_dict)
+        credential = DefaultAzureCredential()
+        yield ComputeManagementClient(credential=credential, subscription_id="bfc42d3a-65ca-11e7-95cf-ecb1d756380e")
 
 
 def test_azure_empty(compute_client):
