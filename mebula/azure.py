@@ -4,6 +4,7 @@
 import contextlib
 import unittest.mock
 from collections import defaultdict
+from inspect import isclass
 from typing import Dict, List
 
 try:
@@ -37,7 +38,9 @@ class MockPoller:
 class VirtualMachinesOperations(operations.VirtualMachinesOperations):
     def __init__(self, state: AzureState):
         self.models: Dict[str, msrest.serialization.Model] = {
-            k: v for k, v in models.__dict__.items() if type(v) == type
+            k: v
+            for k, v in models.__dict__.items()
+            if isclass(v) and issubclass(v, msrest.serialization.Model)
         }
         self.state = state
 
