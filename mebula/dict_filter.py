@@ -5,7 +5,7 @@ import operator
 import re
 from typing import Iterable, List, Mapping
 
-import lark  # type: ignore
+import lark
 
 
 __ALL__ = ["match_dict", "filter_dicts"]
