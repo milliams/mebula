@@ -4,7 +4,7 @@ import inspect
 
 import googleapiclient.discovery  # type: ignore
 import googleapiclient.errors  # type: ignore
-import pytest  # type: ignore
+import pytest
 
 from mebula.google import (
     mock_google,

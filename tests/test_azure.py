@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: © 2020 Matt Williams <matt@milliams.com>
 # SPDX-License-Identifier: MIT
 
-import pytest  # type: ignore
+import pytest
 from azure.identity import DefaultAzureCredential
 from azure.mgmt.compute import ComputeManagementClient  # type: ignore
 
