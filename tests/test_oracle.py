@@ -16,7 +16,8 @@ def test_oracle_one_round_trip():
     with mock_oracle():
         compute = oci.core.ComputeClient(config={})
         instance_details = oci.core.models.LaunchInstanceDetails(
-            compartment_id="compartment_id", display_name="foo",
+            compartment_id="compartment_id",
+            display_name="foo",
         )
         compute.launch_instance(instance_details)
 
@@ -30,7 +31,8 @@ def test_get_instance_ip():
     with mock_oracle():
         compute = oci.core.ComputeClient(config={})
         instance_details = oci.core.models.LaunchInstanceDetails(
-            compartment_id="compartment_id", display_name="foo",
+            compartment_id="compartment_id",
+            display_name="foo",
         )
         compute.launch_instance(instance_details)
 
