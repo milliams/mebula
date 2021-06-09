@@ -14,7 +14,7 @@ def compute_client():
         credential = DefaultAzureCredential()
         yield ComputeManagementClient(
             credential=credential,
-            subscription_id="bfc42d3a-65ca-11e7-95cf-ecb1d756380e",
+            subscription_id="foo",
         )
 
 
