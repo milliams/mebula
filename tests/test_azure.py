@@ -12,7 +12,10 @@ from mebula.azure import mock_azure
 def compute_client():
     with mock_azure():
         credential = DefaultAzureCredential()
-        yield ComputeManagementClient(credential=credential, subscription_id="bfc42d3a-65ca-11e7-95cf-ecb1d756380e")
+        yield ComputeManagementClient(
+            credential=credential,
+            subscription_id="bfc42d3a-65ca-11e7-95cf-ecb1d756380e",
+        )
 
 
 def test_azure_empty(compute_client):
