@@ -7,6 +7,10 @@ SPDX-License-Identifier: MIT
 
 ## Unreleased
 
+## 0.2.9 - 2021-07-21
+### Added
+- Oracle: support for ComputeClient.list_shapes
+
 ## 0.2.8 - 2020-10-16
 - Testing release CI
 
