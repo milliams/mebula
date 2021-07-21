@@ -10,8 +10,8 @@ from typing import Dict, List
 try:
     import azure.mgmt.compute  # type: ignore
     import msrest  # type: ignore
-    from azure.mgmt.compute.v2019_03_01 import models  # type: ignore
-    from azure.mgmt.compute.v2019_03_01 import operations
+    from azure.mgmt.compute.v2021_03_01 import models  # type: ignore
+    from azure.mgmt.compute.v2021_03_01 import operations
 except ImportError:
     raise ImportError(
         "The mebula 'azure' module requires the pip package ``mebula[azure]``"

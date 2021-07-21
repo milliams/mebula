@@ -48,3 +48,11 @@ def test_get_instance_ip():
 
         ip = oci.core.VirtualNetworkClient(config={}).get_vnic(vnic_id).data.private_ip
         assert ip.count(".") == 3
+
+
+def test_list_machine_types():
+    with mock_oracle():
+        compute = oci.core.ComputeClient(config={})
+        shapes = compute.list_shapes(compartment_id="compartment_id").data
+        assert len(shapes) > 0
+        assert next(s for s in shapes if s.shape == "VM.GPU2.1")

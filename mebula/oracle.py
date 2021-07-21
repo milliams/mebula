@@ -123,6 +123,33 @@ class OracleComputeClient:
         ]
         return oci.response.Response(200, None, attachments, None)
 
+    @oracle_arg_check
+    def list_shapes(self, compartment_id: str, **kwargs):
+        shapes = [
+            {
+                "baseline_ocpu_utilizations": None,
+                "gpu_description": "NVIDIA\u00ae Tesla\u00ae P100",
+                "gpus": 1,
+                "is_live_migration_supported": False,
+                "local_disk_description": None,
+                "local_disks": 0,
+                "local_disks_total_size_in_gbs": None,
+                "max_vnic_attachment_options": None,
+                "max_vnic_attachments": 12,
+                "memory_in_gbs": 72.0,
+                "memory_options": None,
+                "min_total_baseline_ocpus_required": None,
+                "networking_bandwidth_in_gbps": 8.0,
+                "networking_bandwidth_options": None,
+                "ocpu_options": None,
+                "ocpus": 12.0,
+                "processor_description": "2.0 GHz Intel\u00ae Xeon\u00ae Platinum 8167M (Skylake)",
+                "shape": "VM.GPU2.1",
+            },
+        ]
+        shapes = [oci.core.models.Shape(**s) for s in shapes]
+        return oci.response.Response(200, None, shapes, None)
+
 
 class OracleVirtualNetworkClient:
     """
