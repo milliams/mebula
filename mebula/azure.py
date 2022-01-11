@@ -5,7 +5,7 @@ import contextlib
 import unittest.mock
 from collections import defaultdict
 from inspect import isclass
-from typing import Dict, List
+from typing import Dict, List, Type
 
 try:
     import azure.mgmt.compute  # type: ignore
@@ -37,7 +37,7 @@ class MockPoller:
 
 class VirtualMachinesOperations(operations.VirtualMachinesOperations):
     def __init__(self, state: AzureState):
-        self.models: Dict[str, msrest.serialization.Model] = {
+        self.models: Dict[str, Type[msrest.serialization.Model]] = {
             k: v
             for k, v in models.__dict__.items()
             if isclass(v) and issubclass(v, msrest.serialization.Model)
