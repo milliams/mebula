@@ -6,6 +6,14 @@ name: CI
 on: [push]
 
 jobs:
+  licenses:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install reuse
+        run: pip install reuse
+      - name: Check REUSE spec
+        run: reuse lint
   unit-tests:
     runs-on: ubuntu-latest
     strategy:
@@ -32,15 +40,11 @@ jobs:
         run: poetry run coverage run --source=mebula -m pytest --doctest-modules
       - name: Report coverage
         run: poetry run coverage report
-      - name: Install resuse
-        run: pip install reuse
-      - name: Check REUSE spec
-        run: reuse lint
       - name: Test that package builds
         run: poetry build
   release:
     runs-on: ubuntu-latest
-    needs: unit-tests
+    needs: [licenses, unit-tests]
     if: startsWith(github.ref, 'refs/tags/')
     steps:
       - uses: actions/checkout@v2
