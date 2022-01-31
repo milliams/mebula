@@ -25,7 +25,7 @@ oracle = ["oci"]
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2"
-black = {version = "^21.5b2", allow-prereleases = true}
+black = "^22.1"
 mypy = "^0.910"
 flake8 = "^4.0.1"
 coverage = "^6.0.1"
