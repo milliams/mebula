@@ -24,7 +24,7 @@ google = ["google-api-python-client", "lark-parser"]
 oracle = ["oci"]
 
 [tool.poetry.dev-dependencies]
-pytest = "^6.2"
+pytest = "^7.0"
 black = "^22.1"
 mypy = "^0.931"
 flake8 = "^4.0.1"
