@@ -1,0 +1,11 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Williams"
+  given-names: "Matt"
+  orcid: "https://orcid.org/0000-0003-2198-1058"
+title: "mebula"
+version: 0.2.10
+doi: 10.5281/zenodo.4094775
+date-released: 2024-02-22
+url: "https://github.com/milliams/mebula"
