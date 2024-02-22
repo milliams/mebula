@@ -7,6 +7,7 @@ SPDX-License-Identifier: MIT
 
 ## Unreleased
 
+## 0.2.11 - 2024-02-22
 ### Fixed
 - Fix typing on azure
 
