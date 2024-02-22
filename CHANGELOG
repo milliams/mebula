@@ -7,6 +7,9 @@ SPDX-License-Identifier: MIT
 
 ## Unreleased
 
+### Fixed
+- Fix typing on azure
+
 ## 0.2.9 - 2021-07-21
 ### Added
 - Oracle: support for ComputeClient.list_shapes
