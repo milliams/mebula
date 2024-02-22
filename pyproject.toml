@@ -28,7 +28,7 @@ pytest = "^7.0"
 black = "^22.1"
 mypy = "^0.960"
 flake8 = "^5.0.4"
-coverage = "^6.0.1"
+coverage = "^7.4.2"
 
 [build-system]
 requires = ["poetry>=1.1.0"]
