@@ -52,7 +52,7 @@ class VirtualMachinesOperations(operations.VirtualMachinesOperations):
         custom_headers=None,
         raw=False,
         polling=True,
-        **operation_config
+        **operation_config,
     ):
         vm = self.models["VirtualMachine"].from_dict(parameters)
         vm.name = vm_name
@@ -68,7 +68,7 @@ class VirtualMachinesOperations(operations.VirtualMachinesOperations):
         expand=None,
         custom_headers=None,
         raw=False,
-        **operation_config
+        **operation_config,
     ):
         vm = [
             i for i in self.state.instances[resource_group_name] if i.name == vm_name

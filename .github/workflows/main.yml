@@ -29,12 +29,12 @@ jobs:
         run: pip install poetry
       - name: Setup package
         run: poetry install -E azure -E google -E oracle
-      - name: Run flake8
-        run: poetry run flake8
+      - name: Run linting
+        run: poetry run ruff check
       - name: Run mypy
         run: poetry run mypy mebula tests
-      - name: Run black
-        run: poetry run black --check --diff .
+      - name: Run formatting
+        run: poetry run ruff format --check --diff
       - name: Run pytest
         run: poetry run coverage run --source=mebula -m pytest --doctest-modules
       - name: Report coverage
