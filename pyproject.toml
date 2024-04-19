@@ -27,7 +27,7 @@ oracle = ["oci"]
 pytest = "^8.0"
 mypy = "^1.8"
 coverage = "^7.4.3"
-ruff = "^0.3.0"
+ruff = "^0.4.1"
 
 [build-system]
 requires = ["poetry>=1.1.0"]
